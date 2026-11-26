@@ -29,7 +29,7 @@
 #define WIFI_DISCONNECTED_BIT BIT1
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
-#define ESP_IF_WIFI_STA ESP_MAC_WIFI_STA
+#define WIFI_IF_STA ESP_MAC_WIFI_STA
 #endif
 
 static bool s_reconnect = true;
@@ -104,7 +104,7 @@ static int wifi_cmd_sta(int argc, char **argv)
     }
 
     if (!s_netif_sta) {
-        // 检查是否已经存在默认的STA netif（可能由esp_radar_wifi_init创建）
+        // 检?�是?�已经�??��?认�?STA netif（可?�由esp_radar_wifi_init?�建�?
         s_netif_sta = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
         if (!s_netif_sta) {
             s_netif_sta = esp_netif_create_default_wifi_sta();
@@ -131,7 +131,7 @@ static int wifi_cmd_sta(int argc, char **argv)
     s_reconnect = true;
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     esp_wifi_connect();
 
     xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT, false, true, pdMS_TO_TICKS(5000));
@@ -185,7 +185,7 @@ static int wifi_cmd_ap(int argc, char **argv)
     }
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
 
     ESP_LOGI(TAG, "Starting SoftAP SSID: %s, Password: %s", ssid, password);
 
@@ -305,7 +305,7 @@ static int wifi_config_func(int argc, char **argv)
     esp_wifi_get_mode(&mode);
 
     if (!s_netif_sta && mode != WIFI_MODE_STA) {
-        // 检查是否已经存在默认的STA netif（可能由esp_radar_wifi_init创建）
+        // 检?�是?�已经�??��?认�?STA netif（可?�由esp_radar_wifi_init?�建�?
         s_netif_sta = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
         if (!s_netif_sta) {
             s_netif_sta = esp_netif_create_default_wifi_sta();
@@ -341,7 +341,7 @@ static int wifi_config_func(int argc, char **argv)
 
         ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
         //     esp_err_t esp_wifi_internal_set_fix_rate(wifi_interface_t ifx, bool en, wifi_phy_rate_t rate);
-        //     esp_wifi_internal_set_fix_rate(ESP_IF_WIFI_STA, true, WIFI_PHY_RATE_48M);
+        //     esp_wifi_internal_set_fix_rate(WIFI_IF_STA, true, WIFI_PHY_RATE_48M);
         // ESP_LOGW(TAG, "------- <%s, %d> ------", __func__, __LINE__);
 
         // ESP_ERROR_CHECK(esp_wifi_set_bandwidth(WIFI_IF_STA, WIFI_BW_HT20));
@@ -422,16 +422,16 @@ static int wifi_config_func(int argc, char **argv)
     }
 
     if (wifi_config_args.bandwidth->count) {
-        ESP_ERROR_CHECK(esp_wifi_set_bandwidth(ESP_IF_WIFI_STA, wifi_config_args.bandwidth->ival[0]));
+        ESP_ERROR_CHECK(esp_wifi_set_bandwidth(WIFI_IF_STA, wifi_config_args.bandwidth->ival[0]));
     }
 
     if (wifi_config_args.rate->count) {
         extern esp_err_t esp_wifi_internal_set_fix_rate(wifi_interface_t ifx, bool en, wifi_phy_rate_t rate);
-        ESP_ERROR_CHECK(esp_wifi_internal_set_fix_rate(ESP_IF_WIFI_STA, true, wifi_config_args.rate->ival[0]));
+        ESP_ERROR_CHECK(esp_wifi_internal_set_fix_rate(WIFI_IF_STA, true, wifi_config_args.rate->ival[0]));
     }
 
     if (wifi_config_args.protocol->count) {
-        ESP_ERROR_CHECK(esp_wifi_set_protocol(ESP_IF_WIFI_STA, wifi_config_args.protocol->ival[0]));
+        ESP_ERROR_CHECK(esp_wifi_set_protocol(WIFI_IF_STA, wifi_config_args.protocol->ival[0]));
     }
 
     return ret;
